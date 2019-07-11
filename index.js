@@ -1,15 +1,37 @@
 const express = require('express');
 const Joi = require('joi');
+const config = require('config');
+const logger = require('./logger');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
 const app = express();
 
-app. use(express.json());
+app.use(express.json()); // built-in middleware
+app.use(logger); // custom middleware example
+app.use(express.static('public')); // built-in middleware
+app.use(helmet()); // third-party middleware
+
+// Configuration examples
+console.log('Application Name: ' + config.get('name'));
+console.log('Mail Server Name: ' + config.get('mail.host'));
+console.log('Mail Password: ' + config.get('mail.password'));
+
+// Environment example
+if (app.get('env') === 'development'){
+    app.use(morgan('common'));
+    console.log('Morgan enabled...');
+}
+
+let courses = [
+    {id: 1, name: 'Comp Sci 101'}, 
+    {id: 2, name: 'C#'}, 
+    {id: 3, name: 'Web Dev 101'}
+];
 
 app.get('/', (req, res) => {
     res.send('Hello World!!!');
 });
-
-let courses = [{id: 1, name: 'Comp Sci 101'}, {id: 2, name: 'C#'}, {id: 3, name: 'Web Dev 101'}];
 
 app.get('/api/courses', (req, res) => {
     res.send(courses)
